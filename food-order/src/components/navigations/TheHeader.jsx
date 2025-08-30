@@ -1,15 +1,23 @@
-import Logo from '../../assets/logo.jpg'
-import CustomButton from '../UI/CustomButton'
+import { useContext } from "react";
+import Logo from "../../assets/logo.jpg";
+import CustomButton from "../UI/CustomButton";
+import { CartContext } from "../../store/CartContext";
+
 export default function TheHeader() {
-    return (
-        <header id="main-header">
-            <div id="title">
-                <img src={Logo} alt="App logo" />
-                <h1>Food Order</h1>
-            </div>
-            <nav>
-                <CustomButton textOnly>Cart (0)</CustomButton>
-            </nav>
-        </header>
-    )
+  const { items } = useContext(CartContext);
+  const totalCartItems = items.reduce((totalNumber, item) => {
+    return totalNumber + item.quantity;
+  }, 0);
+  
+  return (
+    <header id="main-header">
+      <div id="title">
+        <img src={Logo} alt="App logo" />
+        <h1>Food Order</h1>
+      </div>
+      <nav>
+        <CustomButton textOnly>Cart ({totalCartItems})</CustomButton>
+      </nav>
+    </header>
+  );
 }
