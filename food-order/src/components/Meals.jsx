@@ -1,21 +1,15 @@
-import { useEffect, useState } from "react";
-import { foodApi } from "../api/foodApi";
 import MealItem from "./MealItem";
+import { useHttp } from "../hooks/useHttp";
 
 export default function Meals() {
-  const [meals, setMeals] = useState([]);
+  const config = {method: 'GET'};
+  const { data: meals, loading, error } = useHttp('http://localhost:3000/meals', config, []);
   
-  useEffect(() => {
-      foodApi.fetchAllMeals().then((res) => {
-        setMeals(res);
-      }).catch(err => alert('Error fetching data.'))
-  }, []);
-
   return (
     <ul id="meals">
       {
         meals.map(item => (
-            <MealItem {...item} key={item.id} />
+          <MealItem {...item} key={item.id} />
         ))
       }
     </ul>
