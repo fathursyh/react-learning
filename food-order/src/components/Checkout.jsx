@@ -5,32 +5,45 @@ import { formatCurrency } from "../utils/formatter";
 import Input from "./UI/Input";
 import CustomButton from "./UI/CustomButton";
 import { UserProgressContext } from "../store/UserProgressContext";
+import { useHttp } from "../hooks/useHttp";
+
+const config = {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+};
 
 export default function Checkout() {
-  const { items } = useContext(CartContext);
+  const { items, clearCart } = useContext(CartContext);
   const { progress, hideCheckout } = useContext(UserProgressContext);
   const cartTotal = items.reduce((total, item) => {
     return total + item.quantity * item.price;
   }, 0);
+
+  const { sendRequest, loading, data } = useHttp('http://localhost:3000/orders', config);
+
   function handlingSubmit(e) {
     e.preventDefault();
     const fd = new FormData(e.target);
     const customerData = Object.fromEntries(fd.entries());
 
-    fetch('http://localhost:3000/orders', {
-      method: 'post',
-      headers: {
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify({
+    sendRequest(
+      JSON.stringify({
         order: {
           items,
           customer: customerData
         }
       })
-    })
+    );
   }
-  
+
+  if (data) {
+    alert('Success!');
+    clearCart();
+    hideCheckout();
+  }
+
   return (
     <CustomModal open={progress === 'checkout'}>
       <form onSubmit={handlingSubmit}>
@@ -45,8 +58,15 @@ export default function Checkout() {
         </div>
 
         <div className="modal-actions">
-          <CustomButton textOnly onClick={ hideCheckout }>Close</CustomButton>
-          <CustomButton>Submit</CustomButton>
+          {
+            loading ?
+              <p>Loading..</p>
+              :
+              <>
+                <CustomButton textOnly onClick={hideCheckout}>Close</CustomButton>
+                <CustomButton>Submit</CustomButton>
+              </>
+          }
         </div>
       </form>
     </CustomModal>
