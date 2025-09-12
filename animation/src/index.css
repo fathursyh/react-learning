@@ -280,7 +280,6 @@ main {
   display: inline-block;
   font-size: 0.85rem;
   margin-left: 0.25rem;
-  transition: transform 0.4s ease;
 }
 
 .challenge-item-details.expanded .challenge-item-details-icon {
